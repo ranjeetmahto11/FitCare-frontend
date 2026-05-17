@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,
+                   initial-scale=1.0">
+    <title>FitCare — Dashboard</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<nav class="fc-navbar d-flex align-items-center
+            justify-content-between">
+    <a class="fc-brand" href="dashboard.html">
+        Fit<span>Care</span>
+    </a>
+    <ul class="d-flex mb-0 list-unstyled gap-1">
+        <li>
+            <a href="dashboard.html"
+               class="nav-link-fc active">
+                <i class="bi bi-grid"></i>
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="roadmap.html"
+               class="nav-link-fc">
+                <i class="bi bi-map"></i>
+                Roadmap
+            </a>
+        </li>
+    </ul>
+    <div class="d-flex align-items-center gap-3">
+        <span style="color:var(--text-muted);
+                     font-size:14px;"
+              id="navUserName"></span>
+        <div class="fc-avatar"
+             id="navAvatar"
+             onclick="toggleMenu()">U</div>
+
+        <div id="dropMenu"
+             class="fc-card p-2"
+             style="position:absolute;
+                    top:72px;right:20px;
+                    width:180px;
+                    display:none;z-index:999;">
+            <a href="goal-select.html"
+               class="d-flex align-items-center
+                      gap-2 p-2 rounded"
+               style="color:var(--text-muted);
+                      font-size:14px;
+                      text-decoration:none;">
+                <i class="bi bi-bullseye"></i>
+                Change Goal
+            </a>
+            <a href="#"
+               onclick="logout()"
+               class="d-flex align-items-center
+                      gap-2 p-2 rounded"
+               style="color:var(--danger);
+                      font-size:14px;
+                      text-decoration:none;">
+                <i class="bi bi-box-arrow-right"></i>
+                Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="fc-main">
+
+    <!-- Greeting -->
+    <div class="mb-4">
+        <h4 class="fw-bold mb-1"
+            id="greeting">Loading...</h4>
+        <p style="color:var(--text-muted);
+                  font-size:14px;"
+           id="goalSubtitle">
+            Loading your goal...
+        </p>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="fc-stat">
+                <div class="fc-stat-icon">
+                    <span id="goalIcon">🎯</span>
+                </div>
+                <div class="fc-stat-label">
+                    Current Goal
+                </div>
+                <div class="fc-stat-value"
+                     id="statGoal"
+                     style="font-size:15px;
+                            margin-top:4px;">
+                    —
+                </div>
+                <div class="fc-stat-sub"
+                     id="statWeek">
+                    Week — of —
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="fc-stat warning">
+                <div class="fc-stat-icon warning">
+                    📊
+                </div>
+                <div class="fc-stat-label">
+                    Progress
+                </div>
+                <div class="fc-stat-value"
+                     id="statProgress">
+                    —%
+                </div>
+                <div class="fc-stat-sub">
+                    completed
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="fc-stat info">
+                <div class="fc-stat-icon info">
+                    ⚖️
+                </div>
+                <div class="fc-stat-label">
+                    BMI
+                </div>
+                <div class="fc-stat-value"
+                     id="statBmi">—</div>
+                <div class="fc-stat-sub"
+                     id="statBmiCat">—</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="fc-stat purple">
+                <div class="fc-stat-icon purple">
+                    📅
+                </div>
+                <div class="fc-stat-label">
+                    Expected End
+                </div>
+                <div class="fc-stat-value"
+                     id="statEndDate"
+                     style="font-size:14px;
+                            margin-top:4px;">
+                    —
+                </div>
+                <div class="fc-stat-sub">
+                    target date
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goal Progress -->
+    <div class="fc-card mb-4">
+        <div class="d-flex
+                    justify-content-between
+                    align-items-center mb-3">
+            <div class="fc-card-title mb-0">
+                <i class="bi bi-trophy"></i>
+                Goal Progress
+            </div>
+            <div class="d-flex gap-2">
+                <span style="font-size:14px;
+                             font-weight:700;
+                             color:var(--accent);"
+                      id="progressPct">
+                    0%
+                </span>
+                <button class="btn-fc-outline"
+                        style="padding:6px 14px;
+                               font-size:13px;"
+                        onclick="advanceWeek()">
+                    <i class="bi bi-arrow-right"></i>
+                    Next Week
+                </button>
+            </div>
+        </div>
+
+        <div class="fc-progress mb-3">
+            <div class="fc-progress-bar"
+                 id="goalBar"
+                 style="width:0%">
+            </div>
+        </div>
+
+        <div class="row g-3 text-center">
+            <div class="col-4">
+                <div style="font-size:12px;
+                            color:var(
+                            --text-muted);">
+                    Start Date
+                </div>
+                <div style="font-size:14px;
+                            font-weight:600;"
+                     id="startDate">—</div>
+            </div>
+            <div class="col-4">
+                <div style="font-size:12px;
+                            color:var(
+                            --text-muted);">
+                    Current Week
+                </div>
+                <div style="font-size:28px;
+                            font-weight:800;
+                            color:var(--accent);"
+                     id="currentWeek">—</div>
+            </div>
+            <div class="col-4">
+                <div style="font-size:12px;
+                            color:var(
+                            --text-muted);">
+                    End Date
+                </div>
+                <div style="font-size:14px;
+                            font-weight:600;"
+                     id="endDate">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions + Profile -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="fc-card">
+                <div class="fc-card-title">
+                    <i class="bi bi-lightning"></i>
+                    Quick Actions
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="roadmap.html"
+                       class="btn-fc
+                              justify-content-start">
+                        <i class="bi bi-map"></i>
+                        View My Roadmap
+                    </a>
+                    <a href="goal-select.html"
+                       class="btn-fc-outline
+                              justify-content-start">
+                        <i class="bi bi-bullseye"></i>
+                        Change My Goal
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="fc-card">
+                <div class="fc-card-title">
+                    <i class="bi bi-person"></i>
+                    My Profile
+                </div>
+                <div id="profileCard">
+                    <div class="text-center py-3"
+                         style="color:var(
+                         --text-muted);">
+                        <div class="spinner-border
+                            spinner-border-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="fc-toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script>
+    requireAuth();
+
+    document.addEventListener(
+        'DOMContentLoaded', async () => {
+            loadNavbar();
+
+            const user = getUser();
+            if (user) {
+                document.getElementById('greeting')
+                    .textContent =
+                        getGreeting(user.name);
+            }
+
+            await Promise.all([
+                loadGoal(),
+                loadProfile()
+            ]);
+        });
+
+    async function loadGoal() {
+        const result = await apiGetMyGoal();
+
+        if (!result?.data?.success) {
+            document.getElementById('goalSubtitle')
+                .textContent =
+                    'No active goal set.';
+            return;
+        }
+
+        const g = result.data.data;
+
+        document.getElementById('goalIcon')
+            .textContent =
+                g.goalIcon
+                || getGoalIcon(g.goalType);
+        document.getElementById('statGoal')
+            .textContent =
+                formatGoalType(g.goalType);
+        document.getElementById('statWeek')
+            .textContent =
+                `Week ${g.currentWeek} `
+                + `of ${g.totalWeeks}`;
+        document.getElementById('statProgress')
+            .textContent =
+                `${g.completionPercentage || 0}%`;
+        document.getElementById('progressPct')
+            .textContent =
+                `${g.completionPercentage || 0}%`;
+        document.getElementById('goalBar')
+            .style.width =
+                `${g.completionPercentage || 0}%`;
+        document.getElementById('currentWeek')
+            .textContent = g.currentWeek;
+        document.getElementById('startDate')
+            .textContent =
+                g.startDate
+                ? formatDateDisplay(g.startDate)
+                : '—';
+        document.getElementById('endDate')
+            .textContent =
+                g.expectedEndDate
+                ? formatDateDisplay(
+                    g.expectedEndDate)
+                : '—';
+        document.getElementById('statEndDate')
+            .textContent =
+                g.expectedEndDate
+                ? formatDateDisplay(
+                    g.expectedEndDate)
+                : '—';
+        document.getElementById('goalSubtitle')
+            .textContent =
+                `Goal: ${g.goalName} — `
+                + `${g.completionPercentage || 0}%`
+                + ` Complete`;
+    }
+
+    async function loadProfile() {
+        const [profileRes, bmiRes] =
+            await Promise.all([
+                apiGetProfile(),
+                apiGetBmi()
+            ]);
+
+        const el =
+            document.getElementById('profileCard');
+
+        if (profileRes?.data?.success) {
+            const p = profileRes.data.data;
+
+            if (bmiRes?.data?.success) {
+                const b = bmiRes.data.data;
+                const color =
+                    getBmiColor(b.category);
+
+                document.getElementById('statBmi')
+                    .textContent = b.bmi;
+                document.getElementById(
+                    'statBmiCat')
+                    .textContent = b.category;
+                document.getElementById(
+                    'statBmiCat')
+                    .style.color = color;
+            }
+
+            el.innerHTML = `
+                <div class="d-flex
+                            flex-column gap-2">
+                    ${[
+                        ['Name', p.name],
+                        ['Email', p.email],
+                        ['Height',
+                            p.heightCm
+                            ? p.heightCm + ' cm'
+                            : '—'],
+                        ['Weight',
+                            p.weightKg
+                            ? p.weightKg + ' kg'
+                            : '—'],
+                        ['Fitness Level',
+                            p.fitnessLevel || '—'],
+                        ['BMI',
+                            p.bmi
+                            ? p.bmi + ' (' +
+                              p.bmiCategory + ')'
+                            : '—']
+                    ].map(([label, value]) => `
+                        <div class="d-flex
+                            justify-content-between">
+                            <span style="font-size:
+                                13px;color:var(
+                                --text-muted);">
+                                ${label}
+                            </span>
+                            <span style="font-size:
+                                13px;font-weight:
+                                600;">
+                                ${value}
+                            </span>
+                        </div>`).join('')}
+                </div>`;
+        }
+    }
+
+    async function advanceWeek() {
+        if (!confirm(
+            'Mark this week as complete?'))
+            return;
+
+        const result = await apiAdvanceWeek();
+
+        if (result?.data?.success) {
+            const g = result.data.data;
+            showToast(
+                g.status === 'COMPLETED'
+                ? '🎉 Goal Completed!'
+                : `Week ${g.currentWeek} started! 💪`);
+            await loadGoal();
+        } else {
+            showToast(
+                result?.data?.message
+                || 'Failed', 'error');
+        }
+    }
+
+    function toggleMenu() {
+        const menu =
+            document.getElementById('dropMenu');
+        menu.style.display =
+            menu.style.display === 'none'
+            ? 'block' : 'none';
+    }
+
+    document.addEventListener('click', e => {
+        const menu =
+            document.getElementById('dropMenu');
+        const avatar =
+            document.getElementById('navAvatar');
+        if (menu && !menu.contains(e.target)
+                && e.target !== avatar) {
+            menu.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
