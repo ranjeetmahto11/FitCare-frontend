@@ -1,9 +1,9 @@
-// =============================================
-//  FitCare — API (Simplified)
-//  Backend: http://localhost:8081
-// =============================================
 
-const API_BASE = 'http://localhost:8081/api';
+//  FitCare — API 
+
+
+const API_BASE = 
+'https://fitcare-backend-production.up.railway.app/api';
 
 // ── Storage ───────────────────────────────────
 function getToken() {
