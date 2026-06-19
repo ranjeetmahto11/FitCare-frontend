@@ -3,7 +3,7 @@
 
 
 const API_BASE = 
-'https://fitcare-backend-production.up.railway.app/api';
+'https://fitcare-backend-coab.onrender.com';
 
 // ── Storage ───────────────────────────────────
 function getToken() {
@@ -95,7 +95,15 @@ async function apiCall(
     }
 }
 
-// ── Auth APIs ─────────────────────────────────
+async function apiGetAllGoalsPublic() {
+    return await apiCall('/goals/all');
+}
+
+async function apiGetRoadmapPublic(goalType) {
+    return await apiCall(
+        `/roadmap/${goalType}`);
+}
+
 async function apiRegister(payload) {
     return await apiCall(
         '/auth/register', 'POST', payload);
@@ -106,7 +114,6 @@ async function apiLogin(payload) {
         '/auth/login', 'POST', payload);
 }
 
-// ── User APIs ─────────────────────────────────
 async function apiGetProfile() {
     return await apiCall('/users/me');
 }

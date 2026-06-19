@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,
+                   initial-scale=1.0">
+    <title>FitCare — Explore Goals</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet"
+          href="../css/style.css">
+    <style>
+        .fc-goal-card {
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .fc-goal-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px
+                rgba(0,214,143,0.15);
+        }
+        .fc-hero {
+            background: linear-gradient(
+                135deg,
+                rgba(0,214,143,0.08),
+                rgba(77,157,224,0.08));
+            border-radius: var(--radius);
+            padding: 48px 32px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .fc-roadmap-preview {
+            display: none;
+        }
+        .fc-phase-mini {
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--border);
+        }
+        .fc-phase-mini.current {
+            border-left-color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Navbar ─────────────────────────────── -->
+<nav class="fc-navbar d-flex align-items-center
+            justify-content-between">
+    <a class="fc-brand" href="../index.html">
+        Fit<span>Care</span>
+    </a>
+
+    <ul class="d-flex mb-0 list-unstyled gap-1">
+        <li>
+            <a href="explore.html"
+               class="nav-link-fc active">
+                <i class="bi bi-compass"></i>
+                Explore
+            </a>
+        </li>
+    </ul>
+
+    <div class="d-flex align-items-center gap-2"
+         id="navActions">
+    </div>
+</nav>
+
+<!-- ── Main ───────────────────────────────── -->
+<div class="fc-main">
+
+    <!-- Hero Section -->
+    <div class="fc-hero">
+        <h2 class="fw-bold mb-2">
+            Achieve Your Fitness Goal 💪
+        </h2>
+        <p style="color:var(--text-muted);
+                  font-size:16px;
+                  max-width:500px;
+                  margin:0 auto 24px;">
+            Choose a goal below to see your
+            personalized roadmap. No login needed
+            to explore!
+        </p>
+        <div class="d-flex gap-3
+                    justify-content-center
+                    flex-wrap">
+            <a href="register.html"
+               class="btn-fc px-4">
+                <i class="bi bi-person-plus"></i>
+                Get Started Free
+            </a>
+            <a href="login.html"
+               class="btn-fc-outline px-4">
+                <i class="bi bi-box-arrow-in-right"></i>
+                Login
+            </a>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="goalsLoading"
+         class="text-center py-4">
+        <div class="spinner-border"
+             style="color:var(--accent);">
+        </div>
+        <p class="mt-2"
+           style="color:var(--text-muted);">
+            Loading goals...
+        </p>
+    </div>
+
+    <!-- Goals Section -->
+    <div id="goalsSection"
+         style="display:none;">
+
+        <h5 class="fw-bold mb-3">
+            <i class="bi bi-bullseye me-2"
+               style="color:var(--accent);">
+            </i>
+            Choose Your Goal
+        </h5>
+
+        <div class="row g-3 mb-4"
+             id="goalsGrid">
+        </div>
+    </div>
+
+    <!-- Roadmap Preview Section -->
+    <div id="roadmapSection"
+         class="fc-roadmap-preview">
+
+        <!-- Back Button -->
+        <button class="btn-fc-outline mb-4"
+                onclick="showGoals()">
+            <i class="bi bi-arrow-left"></i>
+            Back to Goals
+        </button>
+
+        <!-- Roadmap Loading -->
+        <div id="roadmapLoading"
+             class="text-center py-4"
+             style="display:none;">
+            <div class="spinner-border"
+                 style="color:var(--accent);">
+            </div>
+            <p class="mt-2"
+               style="color:var(--text-muted);">
+                Loading roadmap...
+            </p>
+        </div>
+
+        <!-- Roadmap Content -->
+        <div id="roadmapContent">
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Toast -->
+<div class="fc-toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+
+<script>
+    // ── On Load ───────────────────────────────
+    document.addEventListener(
+        'DOMContentLoaded', () => {
+            setupNavbar();
+            loadGoals();
+        });
+
+    // ── Setup Navbar ──────────────────────────
+    function setupNavbar() {
+        const user = getUser();
+        const token = getToken();
+        const navEl =
+            document.getElementById('navActions');
+
+        if (token && user) {
+            // Logged in
+            navEl.innerHTML = `
+                <span style="color:var(
+                    --text-muted);
+                    font-size:14px;">
+                    ${user.name}
+                </span>
+                <a href="dashboard.html"
+                   class="btn-fc"
+                   style="padding:8px 16px;
+                          font-size:13px;">
+                    <i class="bi bi-grid"></i>
+                    Dashboard
+                </a>`;
+        } else {
+            // Not logged in
+            navEl.innerHTML = `
+                <a href="login.html"
+                   class="btn-fc-outline"
+                   style="padding:8px 16px;
+                          font-size:13px;">
+                    Login
+                </a>
+                <a href="register.html"
+                   class="btn-fc"
+                   style="padding:8px 16px;
+                          font-size:13px;">
+                    Sign Up Free
+                </a>`;
+        }
+    }
+
+    // ── Load All Goals ────────────────────────
+    async function loadGoals() {
+        const result = await apiGetAllGoalsPublic();
+
+        document.getElementById('goalsLoading')
+            .style.display = 'none';
+
+        if (!result?.data?.success) {
+            showToast(
+                'Could not load goals', 'error');
+            return;
+        }
+
+        const goals = result.data.data;
+        const grid =
+            document.getElementById('goalsGrid');
+
+        document.getElementById('goalsSection')
+            .style.display = 'block';
+
+        grid.innerHTML = goals.map(goal => `
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="fc-card fc-goal-card
+                            text-center"
+                     onclick="loadRoadmap(
+                         '${goal.goalType}',
+                         '${goal.goalName}',
+                         '${goal.goalIcon || "🏋️"}')">
+
+                    <div style="font-size:44px;
+                                margin-bottom:
+                                10px;">
+                        ${goal.goalIcon || '🏋️'}
+                    </div>
+
+                    <div style="font-weight:700;
+                                font-size:15px;
+                                margin-bottom:
+                                6px;">
+                        ${goal.goalName}
+                    </div>
+
+                    <div style="font-size:12px;
+                                color:var(
+                                --text-muted);
+                                margin-bottom:
+                                10px;">
+                        ${goal.goalDescription}
+                    </div>
+
+                    <div class="d-flex gap-2
+                                justify-content-center
+                                flex-wrap">
+                        <span class="fc-badge blue">
+                            ⏱ ${goal.totalWeeks} weeks
+                        </span>
+                        ${getDifficultyBadge(
+                            goal.difficulty)}
+                    </div>
+
+                    <div class="mt-3">
+                        <span class="btn-fc-outline"
+                              style="font-size:12px;
+                                     padding:6px
+                                     14px;">
+                            View Roadmap →
+                        </span>
+                    </div>
+
+                </div>
+            </div>`).join('');
+    }
+
+    // ── Load Roadmap Preview ──────────────────
+    async function loadRoadmap(
+            goalType, goalName, goalIcon) {
+
+        // Hide goals show roadmap
+        document.getElementById('goalsSection')
+            .style.display = 'none';
+        document.getElementById('roadmapSection')
+            .style.display = 'block';
+        document.getElementById('roadmapLoading')
+            .style.display = 'block';
+        document.getElementById('roadmapContent')
+            .innerHTML = '';
+
+        const result =
+            await apiGetRoadmapPublic(goalType);
+
+        document.getElementById('roadmapLoading')
+            .style.display = 'none';
+
+        if (!result?.data?.success) {
+            document.getElementById('roadmapContent')
+                .innerHTML = `
+                <div class="fc-card text-center
+                            py-5">
+                    <div style="font-size:48px;
+                                margin-bottom:
+                                16px;">
+                        🚧
+                    </div>
+                    <h5 class="fw-bold mb-2">
+                        Roadmap Coming Soon
+                    </h5>
+                    <p style="color:var(
+                        --text-muted);">
+                        Roadmap for ${goalName}
+                        will be available soon!
+                    </p>
+                    <a href="register.html"
+                       class="btn-fc mt-3">
+                        Register to Get Notified
+                    </a>
+                </div>`;
+            return;
+        }
+
+        const rm = result.data.data;
+        const phases = rm.phases || [];
+
+        document.getElementById('roadmapContent')
+            .innerHTML = `
+
+            <!-- Roadmap Header -->
+            <div class="fc-card mb-4">
+                <div class="d-flex
+                            align-items-center
+                            gap-3 mb-3">
+                    <span style="font-size:44px;">
+                        ${goalIcon}
+                    </span>
+                    <div>
+                        <h4 class="fw-bold mb-1">
+                            ${rm.title}
+                        </h4>
+                        <div class="d-flex gap-2">
+                            <span class="fc-badge
+                                green">
+                                ${rm.totalWeeks}
+                                weeks
+                            </span>
+                            <span class="fc-badge
+                                blue">
+                                ${phases.length}
+                                phases
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <p style="color:var(--text-muted);
+                          font-size:14px;
+                          margin-bottom:16px;">
+                    ${rm.overview
+                        || rm.description || ''}
+                </p>
+
+                <div class="fc-tip-card">
+                    <div style="font-size:13px;
+                                color:var(--accent);
+                                font-weight:600;
+                                margin-bottom:6px;">
+                        🏆 Expected Results
+                    </div>
+                    <div style="font-size:14px;">
+                        ${rm.expectedResults || ''}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phases -->
+            <div class="fc-card mb-4">
+                <div class="fc-card-title">
+                    <i class="bi bi-signpost-split"></i>
+                    Roadmap Phases
+                </div>
+
+                ${phases.map((phase, idx) => `
+                <div class="fc-phase-mini
+                    ${idx === 0 ? 'current' : ''}
+                    mb-2">
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center
+                                mb-1">
+                        <div style="font-weight:700;
+                                    font-size:14px;">
+                            ${phase.icon || '📌'}
+                            Phase ${phase.phaseNumber}:
+                            ${phase.phaseName}
+                        </div>
+                        <span class="fc-badge
+                            ${idx === 0
+                                ? 'green'
+                                : 'blue'}"
+                              style="font-size:
+                                     10px;">
+                            Week ${phase.startWeek}
+                            — ${phase.endWeek}
+                        </span>
+                    </div>
+                    <div style="font-size:13px;
+                                color:var(
+                                --text-muted);
+                                margin-bottom:8px;">
+                        ${phase.phaseDescription
+                            || ''}
+                    </div>
+                    ${phase.milestone ? `
+                    <div style="font-size:12px;
+                                color:var(--accent);">
+                        🎯 ${phase.milestone}
+                    </div>` : ''}
+
+                    <!-- Tasks Preview -->
+                    ${phase.tasks
+                            && phase.tasks.length > 0
+                        ? `<div class="mt-2">
+                            ${phase.tasks
+                                .slice(0, 3)
+                                .map(t => `
+                            <div style="font-size:
+                                        12px;
+                                        color:var(
+                                        --text-muted);
+                                        padding:
+                                        3px 0;">
+                                &#8226; ${t.taskName}
+                            </div>`).join('')}
+                            ${phase.tasks.length > 3
+                                ? `<div style="font-size:11px;color:var(--accent);">
+                                    +${phase.tasks
+                                    .length - 3}
+                                    more tasks...
+                                   </div>`
+                                : ''}
+                        </div>`
+                        : ''}
+                </div>`).join('')}
+            </div>
+
+            <!-- CTA Card -->
+            <div class="fc-card text-center py-4"
+                 style="background:linear-gradient(
+                        135deg,
+                        rgba(0,214,143,0.08),
+                        rgba(77,157,224,0.08));
+                        border-color:rgba(
+                        0,214,143,0.2);">
+                <h5 class="fw-bold mb-2">
+                    Ready to Start Your Journey? 🚀
+                </h5>
+                <p style="color:var(--text-muted);
+                          font-size:14px;
+                          margin-bottom:20px;">
+                    Create your free account to
+                    track your personal progress
+                    and get a customized plan!
+                </p>
+                <div class="d-flex gap-3
+                            justify-content-center
+                            flex-wrap">
+                    <a href="register.html"
+                       class="btn-fc px-4">
+                        <i class="bi bi-person-plus"></i>
+                        Start for Free
+                    </a>
+                    <a href="login.html"
+                       class="btn-fc-outline px-4">
+                        Already have account?
+                        Login
+                    </a>
+                </div>
+            </div>`;
+    }
+
+    // ── Show Goals Back ───────────────────────
+    function showGoals() {
+        document.getElementById('goalsSection')
+            .style.display = 'block';
+        document.getElementById('roadmapSection')
+            .style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
