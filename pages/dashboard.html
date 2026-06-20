@@ -89,10 +89,9 @@
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
             <div class="fc-stat">
-                <div class="fc-stat-icon">
-                    <span id="goalIcon">🎯</span>
+                <div class="fc-stat-icon"
+                     id="goalIcon">
                 </div>
-                <div class="fc-stat-label">
                     Current Goal
                 </div>
                 <div class="fc-stat-value"
@@ -311,9 +310,8 @@
         const g = result.data.data;
 
         document.getElementById('goalIcon')
-            .textContent =
-                g.goalIcon
-                || getGoalIcon(g.goalType);
+                 .innerHTML =
+                 getGoalIcon(g.goalType);
         document.getElementById('statGoal')
             .textContent =
                 formatGoalType(g.goalType);

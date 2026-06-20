@@ -148,34 +148,37 @@
         grid.style.display = 'flex';
         grid.className = 'row g-3 mb-4';
 
-        grid.innerHTML = result.data.data
-            .map((goal, idx) => `
-            <div class="col-6 col-md-4 col-lg-3">
-                <div class="fc-goal-card"
-                     id="goalCard_${idx}"
-                     onclick="selectGoal(
-                         '${goal.goalType}',
-                         ${idx})">
-                    <span class="fc-goal-emoji">
-                        ${goal.goalIcon || '🏋️'}
-                    </span>
-                    <div class="fc-goal-name">
-                        ${goal.goalName}
-                    </div>
-                    <div class="fc-goal-desc">
-                        ${goal.goalDescription}
-                    </div>
-                    <div class="mt-2">
-                        <span class="fc-goal-weeks">
-                            ⏱ ${goal.totalWeeks} weeks
-                        </span>
-                    </div>
-                    <div class="mt-2">
-                        ${getDifficultyBadge(
-                            goal.difficulty)}
-                    </div>
-                </div>
-            </div>`).join('');
+       // Find this section in loadGoals() and replace
+grid.innerHTML = result.data.data
+    .map((goal, idx) => `
+    <div class="col-6 col-md-4 col-lg-3">
+        <div class="fc-goal-card"
+             id="goalCard_${idx}"
+             onclick="selectGoal(
+                 '${goal.goalType}',
+                 ${idx})">
+
+            <!-- ✅ Replace emoji with icon -->
+            ${getGoalIcon(goal.goalType)}
+
+            <div class="fc-goal-name mt-3">
+                ${goal.goalName}
+            </div>
+            <div class="fc-goal-desc">
+                ${goal.goalDescription}
+            </div>
+            <div class="mt-2">
+                <span class="fc-goal-weeks">
+                    &#9201; ${goal.totalWeeks}
+                    weeks
+                </span>
+            </div>
+            <div class="mt-2">
+                ${getDifficultyBadge(
+                    goal.difficulty)}
+            </div>
+        </div>
+    </div>`).join('');
     }
 
     function selectGoal(goalType, idx) {

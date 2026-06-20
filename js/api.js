@@ -113,6 +113,12 @@ async function apiLogin(payload) {
     return await apiCall(
         '/auth/login', 'POST', payload);
 }
+// ── Guest Login ───────────────────────────
+async function apiGuestLogin() {
+    return await apiCall(
+        '/auth/guest', 'POST');
+    }        
+
 
 async function apiGetProfile() {
     return await apiCall('/users/me');
