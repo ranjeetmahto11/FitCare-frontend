@@ -3,7 +3,7 @@
 
 
 const API_BASE = 
-'https://fitcare-backend-coab.onrender.com';
+'https://fitcare-backend-coab.onrender.com/api';
 
 // ── Storage ───────────────────────────────────
 function getToken() {
