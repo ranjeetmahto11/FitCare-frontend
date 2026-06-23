@@ -9,13 +9,11 @@
         const token =
             localStorage.getItem('fitcare_token');
         if (token) {
-            // Logged in → Dashboard
             window.location.href =
                 'pages/dashboard.html';
         } else {
-            // Not logged in → Explore page
             window.location.href =
-                'pages/explore.html';
+                'pages/login.html';
         }
     </script>
 </body>
