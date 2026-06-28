@@ -9,8 +9,7 @@ function showToast(message, type = 'success') {
 
     if (!container) {
         container = document.createElement('div');
-        container.className =
-            'fc-toast-container';
+        container.className = 'fc-toast-container';
         document.body.appendChild(container);
     }
 
@@ -56,8 +55,7 @@ function setLoading(btn, loading) {
 
 // ── Password Toggle ───────────────────────────
 function togglePassword(inputId, btn) {
-    const input =
-        document.getElementById(inputId);
+    const input = document.getElementById(inputId);
     const icon  = btn.querySelector('i');
     if (input.type === 'password') {
         input.type     = 'text';
@@ -105,9 +103,10 @@ function getGreeting(name) {
         greet = 'Good Afternoon';
     else if (hour >= 17)
         greet = 'Good Evening';
-    return `${greet}, ${name}! 👋`;
+    return `${greet}, ${name}!`;
 }
 
+// ── Goal Icon Map ─────────────────────────────
 function getGoalIcon(goalType) {
     const map = {
         LOSE_FAT: {
@@ -174,6 +173,7 @@ function getGoalIcon(goalType) {
         </div>`;
 }
 
+// ── Phase Icon Map ────────────────────────────
 function getPhaseIcon(icon) {
     const map = {
         'FOUNDATION':    'bi-building',
@@ -209,11 +209,9 @@ function getBmiColor(category) {
 function getDifficultyBadge(difficulty) {
     const map = {
         EASY:      { cls: 'green', text: 'Easy' },
-        MODERATE:  {
-            cls: 'yellow', text: 'Moderate' },
+        MODERATE:  { cls: 'yellow', text: 'Moderate' },
         HARD:      { cls: 'red', text: 'Hard' },
-        VERY_HARD: {
-            cls: 'red', text: 'Very Hard' }
+        VERY_HARD: { cls: 'red', text: 'Very Hard' }
     };
     const d = map[difficulty]
         || { cls: 'blue', text: difficulty };
@@ -254,7 +252,7 @@ function errorHTML(message) {
 function loadNavbar() {
     const user = getUser();
     if (!user) return;
-    const nameEl   =
+    const nameEl =
         document.getElementById('navUserName');
     const avatarEl =
         document.getElementById('navAvatar');
@@ -267,11 +265,11 @@ function loadNavbar() {
 
 // ── Logout ────────────────────────────────────
 function logout() {
-    clearStorage();
+    localStorage.clear();
     showToast('Logged out successfully');
     setTimeout(() => {
         window.location.href =
-            '/pages/login.html';
+            '/pages/explore.html';
     }, 500);
 }
 

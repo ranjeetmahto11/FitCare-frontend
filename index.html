@@ -8,12 +8,33 @@
     <script>
         const token =
             localStorage.getItem('fitcare_token');
+
         if (token) {
-            window.location.href =
-                'pages/dashboard.html';
+            try {
+                // Decode JWT and check expiry
+                const payload = JSON.parse(
+                    atob(token.split('.')[1]));
+                const now = Date.now() / 1000;
+
+                if (payload.exp && payload.exp > now) {
+                    // Valid token → Dashboard
+                    window.location.href =
+                        'pages/dashboard.html';
+                } else {
+                    // Expired → Clear and explore
+                    localStorage.clear();
+                    window.location.href =
+                        'pages/explore.html';
+                }
+            } catch (e) {
+                // Invalid token → Clear and explore
+                localStorage.clear();
+                window.location.href =
+                    'pages/explore.html';
+            }
         } else {
             window.location.href =
-                'pages/login.html';
+                'pages/explore.html';
         }
     </script>
 </body>

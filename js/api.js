@@ -1,9 +1,10 @@
+// =============================================
+//  FitCare — API
+//  Live Backend: Render
+// =============================================
 
-//  FitCare — API 
-
-
-const API_BASE = 
-'https://fitcare-backend-coab.onrender.com/api';
+const API_BASE =
+    'https://fitcare-backend-coab.onrender.com/api';
 
 // ── Storage ───────────────────────────────────
 function getToken() {
@@ -31,17 +32,51 @@ function clearStorage() {
 
 // ── Auth Guards ───────────────────────────────
 function requireAuth() {
-    if (!getToken()) {
-        window.location.href = '/pages/login.html';
+    const token = getToken();
+    if (!token) {
+        window.location.href =
+            '/pages/login.html';
         return false;
     }
+
+    // Check token expiry
+    try {
+        const payload = JSON.parse(
+            atob(token.split('.')[1]));
+        const now = Date.now() / 1000;
+        if (payload.exp && payload.exp < now) {
+            // Token expired
+            localStorage.clear();
+            window.location.href =
+                '/pages/login.html';
+            return false;
+        }
+    } catch (e) {
+        localStorage.clear();
+        window.location.href =
+            '/pages/login.html';
+        return false;
+    }
+
     return true;
 }
 
 function redirectIfLoggedIn() {
-    if (getToken()) {
-        window.location.href =
-            '/pages/dashboard.html';
+    const token = getToken();
+    if (!token) return;
+
+    try {
+        const payload = JSON.parse(
+            atob(token.split('.')[1]));
+        const now = Date.now() / 1000;
+        if (payload.exp && payload.exp > now) {
+            window.location.href =
+                '/pages/dashboard.html';
+        } else {
+            localStorage.clear();
+        }
+    } catch (e) {
+        localStorage.clear();
     }
 }
 
@@ -72,7 +107,7 @@ async function apiCall(
         const data = await response.json();
 
         if (response.status === 401) {
-            clearStorage();
+            localStorage.clear();
             window.location.href =
                 '/pages/login.html';
             return;
@@ -88,13 +123,13 @@ async function apiCall(
                 success: false,
                 message:
                     'Cannot connect to server. '
-                    + 'Make sure backend is '
-                    + 'running on port 8081.'
+                    + 'Please try again.'
             }
         };
     }
 }
 
+// ── Public APIs (No Login) ────────────────────
 async function apiGetAllGoalsPublic() {
     return await apiCall('/goals/all');
 }
@@ -104,6 +139,7 @@ async function apiGetRoadmapPublic(goalType) {
         `/roadmap/${goalType}`);
 }
 
+// ── Auth APIs ─────────────────────────────────
 async function apiRegister(payload) {
     return await apiCall(
         '/auth/register', 'POST', payload);
@@ -113,13 +149,13 @@ async function apiLogin(payload) {
     return await apiCall(
         '/auth/login', 'POST', payload);
 }
-// ── Guest Login ───────────────────────────
+
 async function apiGuestLogin() {
     return await apiCall(
         '/auth/guest', 'POST');
-    }        
+}
 
-
+// ── User APIs ─────────────────────────────────
 async function apiGetProfile() {
     return await apiCall('/users/me');
 }
